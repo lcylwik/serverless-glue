@@ -13,6 +13,8 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+yarn.lock
+
 #avoid openapi.json
 openapi.json
 
