@@ -51,6 +51,10 @@ export default class GlueJob {
         this.tmpDir = tmpDir;
     }
 
+    setConnections(connections) {
+        this.connections = connections;
+    }
+
     setOnlyPropertiesSpark(cfn) {
         if (this.commandName === 'glueetl') {
             if (this.WorkerType) {
@@ -78,6 +82,9 @@ export default class GlueJob {
                 "Role": this.role,
                 "ExecutionProperty": {
                     "MaxConcurrentRuns": this.maxConcurrentRuns || 1
+                }, 
+                "Connections": {
+                    "Connections": this.connections
                 },
                 "DefaultArguments": {
                     "--job-language": this.language,

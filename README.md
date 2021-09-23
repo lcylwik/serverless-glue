@@ -38,6 +38,7 @@ custom:
           MaxConcurrentRuns: 3 # Optional
           WorkerType: Standard  # Optional  | Standard  | G1.X | G2.X
           NumberOfWorkers: 1 # Optional
+          Connections: Database connections # Optional
     triggers:
       - trigger:
           name: some-trigger-name # Required
