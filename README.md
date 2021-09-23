@@ -4,11 +4,11 @@ This is a plugin for Serverless framework that provide the posibliti to deploy A
 
 ## Install 
 
-1. run `npm install --save-dev serverless-glue`
-2. add **serverless-glue** in serverless.yml plugin section
+1. run `npm install --save-dev @lcylwik/serverless-glue`
+2. add **@lcylwik/serverless-glue** in serverless.yml plugin section
     ```yml
     plugins:
-        - serverless-glue
+        - "@lcylwik/serverless-glue"
     ```
 ## How work
 
@@ -36,9 +36,9 @@ custom:
           glueVersion: python3-2.0 # Required python3-1.0 | python3-2.0 | python2-1.0 | python2-0.9 | scala2-1.0 | scala2-0.9 | scala2-2.0 
           role: arn:aws:iam::000000000:role/someRole # Required
           MaxConcurrentRuns: 3 # Optional
-          WorkerType: Standard  # Optional  | Standard  | G1.X | G2.X
+          WorkerType: Standard  # Optional  | Standard  | G.1X | G.2X
           NumberOfWorkers: 1 # Optional
-          Connections: Database connections # Optional
+          Connections: RDS-MySQL5.7-Connection1,RDS-MySQL5.7-Connection2 # Optional
     triggers:
       - trigger:
           name: some-trigger-name # Required
@@ -103,6 +103,7 @@ custom:
 |glueVersion|String|Indicate language and glue version to use ( `[language][version]-[glue version]`) the value can you use are: <ul><li>python3-1.0</li><li>python3-2.0</li><li>python2-1.0</li><li>python2-0.9</li><li>scala2-1.0</li><li>scala2-0.9</li><li>scala2-2.0</li></ul>|true|
 |role|String| arn role to execute job|true|
 |MaxConcurrentRuns|Double|max concurrent runs of the job|false|
+|Connections|String|Database conections (for multiple connections use , for separetion)|false|
 |WorkerType|String|The type of predefined worker that is allocated when a job runs. Accepts a value of Standard, G.1X, or G.2X.|false|
 |NumberOfWorkers|Integer|number of workers|false|
 
