@@ -1,6 +1,6 @@
 {
   "name": "@lcylwik/serverless-glue",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Serverless plugin to deploy Glue Jobs",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "babel src -d lib",
     "bp": "npm run gulp && npm pack lib/ ",
     "gulp": "gulp clean && npm run build && gulp build",
-    "publishme": "npm run gulp && npm login && npm publish lib/ --access public"
+    "publishme": "npm run gulp && npm login && npm publish lib/"
   },
   "repository": {
     "type": "git",
