@@ -1,9 +1,11 @@
-import { makeS3service } from "../util/aws.util";
-import { getAWSCredentials } from "../util/serverless.util";
 import { readFileSync } from 'fs'
+
+import { getAWSCredentials } from "../util/serverless.util";
+import GlueConnection from "../domain/glue-connection";
 import GlueJob from "../domain/glue-job";
 import GlueTrigger from "../domain/glue-trigger";
 import GlueTriggerAction from "../domain/glue-trigger-action";
+import { makeS3service } from "../util/aws.util";
 import { toPascalCase } from '../util/string.util'
 
 export default class GlueHelper {
@@ -11,7 +13,6 @@ export default class GlueHelper {
         this.serverless = serverless;
         this.tempDir = false;
     }
-
 
     /**
      * Upload Script to s3 bucket and return file destination
@@ -21,12 +22,12 @@ export default class GlueHelper {
      */
     async uploadGlueScriptToS3(fileScriptPath, bucket, keyPath = '') {
 
-        let credentials = getAWSCredentials(this.serverless)
-        let s3Service = makeS3service(credentials);
+        const credentials = getAWSCredentials(this.serverless)
+        const s3Service = makeS3service(credentials);
 
-        let fileName = fileScriptPath.split('/').pop();
+        const fileName = fileScriptPath.split('/').pop();
 
-        let params = {
+        const params = {
             Body: readFileSync(`./${fileScriptPath}`),
             Bucket: bucket,
             Key: `${keyPath}${fileName}`
@@ -41,22 +42,26 @@ export default class GlueHelper {
         return this.serverless.service.custom.Glue
     }
 
+    getAccountId() {
+        return this.serverless.service.custom.accountId
+    }
+
     /**
      * Get GlueJobs configured in serverless.yml
      * @param {Object} config plugin config
      */
     async getGlueJobs(config) {
-        let arrayJobsJSON = config.jobs;
-        let s3KeyPrefix = config.s3Prefix ? config.s3Prefix : 'glueJobs/';
+        const arrayJobsJSON = config.jobs;
+        const s3KeyPrefix = config.s3Prefix ? config.s3Prefix : 'glueJobs/';
 
-        let tempDirBucket = config.tempDirBucket;
-        let tempDirS3Prefix = config.tempDirS3Prefix;
+        const tempDirBucket = config.tempDirBucket;
+        const tempDirS3Prefix = config.tempDirS3Prefix;
 
-        let jobs = [];
-        for (let job of arrayJobsJSON) {
-            let _job = job.job
-            let glueJob = new GlueJob(_job.name, _job.script);
-            let s3Url = await this.uploadGlueScriptToS3(_job.script, config.bucketDeploy, s3KeyPrefix);
+        const jobs = [];
+        for (const job of arrayJobsJSON) {
+            const _job = job.job
+            const glueJob = new GlueJob(_job.name, _job.script);
+            const s3Url = await this.uploadGlueScriptToS3(_job.script, config.bucketDeploy, s3KeyPrefix);
             glueJob.setS3ScriptLocation(s3Url);
             glueJob.setGlueVersion(_job.glueVersion);
             glueJob.setRole(_job.role);
@@ -78,7 +83,7 @@ export default class GlueHelper {
                 this.tempDir = true;
 
                 // use the provided temp dir bucket if configured
-                let jobTempDirBucket = tempDirBucket || {"Ref" : "GlueJobTempBucket"};
+                const jobTempDirBucket = tempDirBucket || { "Ref": "GlueJobTempBucket" };
 
                 // use the provided s3 prefix if configured
                 let jobTempDirS3Prefix = "";
@@ -87,9 +92,11 @@ export default class GlueHelper {
                 }
                 jobTempDirS3Prefix += `/${_job.name}`;
 
-                glueJob.setTempDir({"Fn::Join": [
-                        "",["s3://", jobTempDirBucket, jobTempDirS3Prefix]
-                    ]})
+                glueJob.setTempDir({
+                    "Fn::Join": [
+                        "", ["s3://", jobTempDirBucket, jobTempDirS3Prefix]
+                    ]
+                })
             }
 
             jobs.push(glueJob);
@@ -98,14 +105,55 @@ export default class GlueHelper {
     }
 
     /**
+     * Get Glue Connections configured in serverless.yml
+     * @param {Object} config plugin config
+     */
+    async getGlueConnections(config) {
+        const accountId = this.getAccountId();
+        const arrayConnectionsJSON = config.connections;
+        this.serverless.cli.log("Get glue connections config", arrayConnectionsJSON);
+
+        const connections = [];
+        for (const item of arrayConnectionsJSON) {
+            const _connection = item.connection
+            const glueConnection = new GlueConnection(_connection.name, accountId);
+            glueConnection.setType(_connection.connectionType);
+            glueConnection.setName(_connection.name);
+
+            glueConnection.setDBUri(_connection.dbUri);
+            glueConnection.setDBUsername(_connection.dbUsername);
+            glueConnection.setDBPassword(_connection.dbPassword);
+
+            if(_connection.description) {
+                glueConnection.setDescription(_connection.description);
+            }
+
+            if (_connection.MatchCriteria) {
+                glueConnection.setMatchCriteria(_connection.MatchCriteria.split(","));
+            }
+
+            if(_connection.securityGroupIdList) {
+                glueConnection.setSecurityGroup(_connection.securityGroupIdList.split(","));
+            }
+
+            if(_connection.subnetId) {
+                glueConnection.setDescription(_connection.subnetId);
+            }
+
+            connections.push(glueConnection);
+        }
+        return connections;
+    }
+
+    /**
      * Get GlueJobTriggers configured in serverless.yml
      * @param {Object} config plugin config
      */
     async getGlueTriggers(config) {
         let triggers = [];
-        try{
+        try {
             let arrayTriggersJSON = config.triggers;
-    
+
             for (let trigger of arrayTriggersJSON) {
                 let _trigger = trigger.trigger;
                 let glueTrigger = new GlueTrigger(_trigger.name, _trigger.schedule);
@@ -124,33 +172,36 @@ export default class GlueHelper {
                 glueTrigger.setActions(glueTriggerActions);
                 triggers.push(glueTrigger);
             }
-        }catch(err){
+        } catch (err) {
             console.log(`No Trigger configuration`);
-        }finally{
+        } finally {
             return triggers;
         }
     }
 
     async run() {
-        let config = this.getPluginConfig();
+        const config = this.getPluginConfig();
 
-        let jobs = await this.getGlueJobs(config);
-        let triggers = await this.getGlueTriggers(config);
+        const connections = await this.getGlueConnections(config);
+        const jobs = await this.getGlueJobs(config);
+        const triggers = await this.getGlueTriggers(config);
 
-        let template = this.serverless.service.provider.compiledCloudFormationTemplate.Resources;
-        let outputs = this.serverless.service.provider.compiledCloudFormationTemplate.Outputs;
+        const template = this.serverless.service.provider.compiledCloudFormationTemplate.Resources;
+        const outputs = this.serverless.service.provider.compiledCloudFormationTemplate.Outputs;
         this.serverless.cli.log("Building GlueJobs CloudFormation");
-        for (let job of jobs) {
+        for (const connection of connections) {
+            template[toPascalCase(connection.name)] = connection.getCFGlueConnection();
+        }
+        for (const job of jobs) {
             template[toPascalCase(job.name)] = job.getCFGlueJob();
         }
-        for (let trigger of triggers) {
+        for (const trigger of triggers) {
             template[toPascalCase(trigger.name)] = trigger.getCFGlueTrigger();
         }
 
-
         if (this.tempDir && !config.tempDirBucket) {
             this.serverless.cli.log("Building S3 Temp Bucket CloudFormation");
-            let tempBucket = {
+            const tempBucket = {
                 "Type": "AWS::S3::Bucket",
                 "Properties": {
                     "BucketName": `${this.serverless.service.service}-${this.serverless.service.provider.stage}-gluejobstemp`
