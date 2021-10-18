@@ -55,6 +55,10 @@ export default class GlueJob {
         this.connections = connections;
     }
 
+    setAdditionalModule(additionalModule) {
+        this.additionalModule = additionalModule;
+    }
+
     setOnlyPropertiesSpark(cfn) {
         if (this.commandName === 'glueetl') {
             if (this.WorkerType) {
@@ -88,7 +92,8 @@ export default class GlueJob {
                 },
                 "DefaultArguments": {
                     "--job-language": this.language,
-                    "--TempDir": this.tmpDir || ""
+                    "--TempDir": this.tmpDir || "",
+                    "--additional-python-modules": this.additionalModule,
                 },
             }
         };

@@ -1,6 +1,6 @@
 {
   "name": "@lcylwik/serverless-glue",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Serverless plugin to deploy Glue Jobs",
   "main": "index.js",
   "scripts": {

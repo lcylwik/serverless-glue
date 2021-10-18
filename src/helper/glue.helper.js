@@ -74,6 +74,9 @@ export default class GlueHelper {
             if (_job.Connections) {
                 glueJob.setConnections(_job.Connections.split(","));
             }
+            if (_job.AdditionalPythonModules) {
+                glueJob.setAdditionalModule(_job.AdditionalPythonModules);
+              }
             if (_job.tempDir) {
                 this.tempDir = true;
 
