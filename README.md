@@ -39,6 +39,7 @@ custom:
           WorkerType: Standard  # Optional  | Standard  | G.1X | G.2X
           NumberOfWorkers: 1 # Optional
           Connections: RDS-MySQL5.7-Connection1,RDS-MySQL5.7-Connection2 # Optional
+          AdditionalPythonModules: "mysql-connector-python==8.0.5,pymongo==3.11.4" 
     triggers:
       - trigger:
           name: some-trigger-name # Required
@@ -106,6 +107,7 @@ custom:
 |Connections|String|Database conections (for multiple connections use , for separetion)|false|
 |WorkerType|String|The type of predefined worker that is allocated when a job runs. Accepts a value of Standard, G.1X, or G.2X.|false|
 |NumberOfWorkers|Integer|number of workers|false|
+|AdditionalPythonModules|String|Additional python plugins (for multiple plugins use , for separation) |false|
 
 ### Triggers configuration parameters
 
