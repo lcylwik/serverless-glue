@@ -2,19 +2,6 @@
 
 Serverless-glue is an open source MIT licensed project, which has been able to grow thanks to the community. This project is the result of an idea that did not let it rest in oblivion and many hours of work after hours.
 
-If you want to help me you can do it in the following ways:
-
-- With a donation through paypal [here](https://paypal.me/toryas).
-- Sharing your feedback [here](https://github.com/toryas/serverless-glue/issues).
-
-I hope you liked this project and it is useful for you.
-
----
-The principal changes are available [here](#changelog)
----
-
-This is a plugin for Serverless framework that provide the possibility to deploy AWS Glue Jobs and Triggers
-
 ## Install
 
 1. run `npm install --save-dev @lcylwik/serverless-glue`
@@ -214,67 +201,3 @@ Only On-Demand and Scheduled triggers are supported.
 
 Only run `serverless deploy`
 ---
-
-# Changelog
-<a name="changelog"></a>
-
-
-
-## [2.5.0] - 2022-02-14
-
-### Add
-- Add the `createBucketConfig` feature to set the bucket creation configuration.
-
-### Changed
-- Removed message when support files not found, now logging message when support files exist.
-### Fix
-- Improve the `createBucket` example of documentation.
-
-## [2.4.1] - 2022-02-01
-### Fix
-- Fix schema typo that blocks serverless 3.
-## [2.4.0] - 2022-01-17
-### Fix
-- Fix NumberOwfWorkers typo.
-
-### Add
-- Added `Tiemout`, `MaxRetires` and `Description` parameters to Glue Job arguments. Added `Description` and `StartOnCreation` parameters to Glue Job Trigger arguments.
-- Added `SupportFiles` to Glue Job arguments handling the upload to S3 of relevant-to-the-Glue-Job(s) files
-
-
-## [2.3.0] - 2021-12-23
-
-### Add
-- Implement Custom Arguments for Jobs
-## [2.2.0] - 2021-12-22
-
-### Add
-- Implement Tags for jobs and triggers
-## [2.1.1] - 2021-12-21
-
-### Fixed
-- Remove empty conections objecto from CF template when don`t specify any conection
-## [2.1.0] - 2021-12-15
-
-### Add
-- Implement DefaultArguments for jobs
-## [2.0.2] - 2021-12-13
-
-### Fixed
-- Replace incorrect async loop in serverless
-
-## [2.0.1] - 2021-12-09
-
-### Changed
-- Move typescript dependencie to dev
-## [2.0.0] - 2021-11-29
-### Changed
-- Refactoring code from JS to TS, and restructured folders.
-- Plugin`s configuration get out from *custom* level in serverless.yml now are in root of file. 
-- Remove redundant level *job* in jobs config.
-- **script** attribute are rename to ***scriptPath**
-- Remove redundant level *Conections* in **Conections** config.
-- Remove redundant level trigger from triggers config.
-- Rename **job** attribute to **action** in trigger config.
-### Fixed
-- Improve documentation for **Conections** config.
