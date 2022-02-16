@@ -180,12 +180,7 @@ createBucketConfig|createBucketConfig| Bucket configuration for creation on S3 |
 |glueVersion|String|Indicate language and glue version to use ( `[language][version]-[glue version]`) the value can you use are: <ul><li>python3-1.0</li><li>python3-2.0</li><li>python2-1.0</li><li>python2-0.9</li><li>scala2-1.0</li><li>scala2-0.9</li><li>scala2-2.0</li></ul>|true|
 |role|String| arn role to execute job|true|
 |MaxConcurrentRuns|Double|max concurrent runs of the job|false|
-<<<<<<< HEAD
 |Connections|String|Database conections (for multiple connections use , for separetion)|false|
-=======
-|MaxRetries|Int|Maximum number of retires in case of failure|False|
-|Timeout|Int|Job timeout in number of minutes|False|
->>>>>>> f8b5da20d8bd7bb4fc397bc681907db407dbaa06
 |WorkerType|String|The type of predefined worker that is allocated when a job runs. Accepts a value of Standard, G.1X, or G.2X.|false|
 |NumberOfWorkers|Integer|number of workers|false|
 |Connections|List|a list of connections used by the job|false|
